@@ -15,9 +15,10 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.entity.player.CriticalHitEvent;
 import net.neoforged.neoforge.event.tick.EntityTickEvent;
 import net.oblique.shoving_shovels.ShovingShovels;
+import net.oblique.shoving_shovels.server.enchantment.ModEnchantments;
 import net.oblique.shoving_shovels.server.registry.AttributeRegistry;
 import net.oblique.shoving_shovels.server.util.ShoveDamageHandler;
 
@@ -26,13 +27,13 @@ import java.util.UUID;
 
 @EventBusSubscriber(modid = ShovingShovels.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class GameEventBusEvents {
-
     @SubscribeEvent
-    public static void onAttack(AttackEntityEvent attackEntityEvent) {
-        if (!(attackEntityEvent.getTarget() instanceof LivingEntity target)) {
+    //So this doesn't actually require critical hits to be fired, but it allows us to check for them
+    public static void onCriticalHit(CriticalHitEvent event) {
+        if (!(event.getTarget() instanceof LivingEntity target)) {
             return;
         }
-        Player player = attackEntityEvent.getEntity();
+        Player player = event.getEntity();
         //Check if we're using a shovel in the first place
         //WeaponItem is basically just MainhandItem but also accounts for Riptide apparently? might as well check ig
         ItemStack heldItem = player.getWeaponItem();
@@ -49,17 +50,30 @@ public class GameEventBusEvents {
         knockbackStrength *= strengthScale;
         knockbackStrength *= 1.0 - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
 
-        Vec3 shoveMotion = lookingAngle.scale(knockbackStrength);
-        Vec3 currentMotion = target.getDeltaMovement();
+        int heavingLevel = heldItem.getEnchantmentLevel(player.level().holderOrThrow(ModEnchantments.HEAVING));
 
-        double yShove = getYShove(shoveMotion, lookingAngle);
-        //Must set target to be off ground, or y momentum gets zero-ed out, thank you Minecraft
-        target.setOnGround(false);
-        target.setDeltaMovement(
-                currentMotion.x * 0.5 + (shoveMotion.x * 1.1),
-                currentMotion.y * 0.5 + yShove,
-                currentMotion.z * 0.5 + (shoveMotion.z * 1.1)
-        );
+        //This Heaving enchantment is the entire reason we're in the CriticalHitEvent.....
+        if (heavingLevel > 0 && event.isCriticalHit()) {
+            target.setOnGround(false);
+            target.setDeltaMovement(
+                    0,
+                    0.58 * knockbackStrength,
+                    0
+            );
+        }
+        else {
+            Vec3 shoveMotion = lookingAngle.scale(knockbackStrength);
+            Vec3 currentMotion = target.getDeltaMovement();
+
+            double yShove = getYShove(shoveMotion, lookingAngle);
+            //Must set target to be off ground, or y momentum gets zero-ed out, thank you Minecraft
+            target.setOnGround(false);
+            target.setDeltaMovement(
+                    currentMotion.x * 0.5 + (shoveMotion.x * 1.1),
+                    currentMotion.y * 0.5 + yShove,
+                    currentMotion.z * 0.5 + (shoveMotion.z * 1.1)
+            );
+        }
         target.hasImpulse = true;
 
         //Mark target for shoving logic

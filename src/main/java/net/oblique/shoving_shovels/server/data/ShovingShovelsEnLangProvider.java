@@ -12,5 +12,8 @@ public class ShovingShovelsEnLangProvider extends LanguageProvider {
     @Override
     protected void addTranslations() {
         add("attribute.shoving_shovels.shove_damage", "Shove Damage");
+
+        add("enchantment.shoving_shovels.heaving", "Heaving");
+        add("enchantment.shoving_shovels.heaving.desc", "Dealing a critical hit launches the target into the air.");
     }
 }

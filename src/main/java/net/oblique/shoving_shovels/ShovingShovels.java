@@ -12,6 +12,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.oblique.shoving_shovels.server.enchantment.ModEnchantmentEffects;
 import net.oblique.shoving_shovels.server.registry.AttributeRegistry;
 import org.slf4j.Logger;
 
@@ -30,6 +31,7 @@ public class ShovingShovels
 
         //Registers
         AttributeRegistry.ATTRIBUTES.register(modEventBus);
+        ModEnchantmentEffects.ENTITY_ENCHANTMENT_EFFECTS.register(modEventBus);
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);

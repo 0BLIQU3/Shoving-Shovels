@@ -8,6 +8,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 import net.oblique.shoving_shovels.ShovingShovels;
+import net.oblique.shoving_shovels.server.data.tags.ShovingShovelsItemTagProvider;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -23,6 +24,8 @@ public class Datagen {
             CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
             generator.addProvider(event.includeServer(), new ShovingShovelsEnLangProvider(output));
+            generator.addProvider(event.includeServer(), new ShovingShovelsItemTagProvider(output, lookupProvider, existingFileHelper));
+            generator.addProvider(event.includeServer(), new ShovingShovelsDatapackProvider(output, lookupProvider));
 
         } catch (RuntimeException fail) {
             ShovingShovels.LOGGER.error("Failed to generate data, fail");
