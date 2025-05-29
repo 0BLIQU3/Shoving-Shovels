@@ -17,4 +17,7 @@ public class ModEnchantmentEffects {
 
     public static final Supplier<MapCodec<? extends EnchantmentEntityEffect>> ROWDY =
             ENTITY_ENCHANTMENT_EFFECTS.register("rowdy", () -> RowdyEnchantmentEffect.CODEC);
+
+    public static final Supplier<MapCodec<? extends EnchantmentEntityEffect>> WALLBASH =
+            ENTITY_ENCHANTMENT_EFFECTS.register("wallbash", () -> WallbashEnchantmentEffect.CODEC);
 }

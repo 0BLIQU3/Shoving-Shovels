@@ -17,6 +17,7 @@ import net.oblique.shoving_shovels.server.util.ShovingShovelsTags;
 public class ModEnchantments {
     public static final ResourceKey<Enchantment> UPHEAVAL = ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath(ShovingShovels.MODID, "upheaval"));
     public static final ResourceKey<Enchantment> ROWDY = ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath(ShovingShovels.MODID, "rowdy"));
+    public static final ResourceKey<Enchantment> WALLBASH = ResourceKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath(ShovingShovels.MODID, "wallbash"));
 
     public static void bootstrap(BootstrapContext<Enchantment> context) {
         var enchantments = context.lookup(Registries.ENCHANTMENT);
@@ -48,6 +49,16 @@ public class ModEnchantments {
                                 LevelBasedValue.perLevel(0.5F),
                                 AttributeModifier.Operation.ADD_MULTIPLIED_BASE
                         ))
+        );
+
+        register(context, WALLBASH, Enchantment.enchantment(Enchantment.definition(
+                items.getOrThrow(ShovingShovelsTags.Items.SHOVING_SHOVEL_ENCHANTABLE),
+                5,
+                1,
+                Enchantment.dynamicCost(5, 7),
+                Enchantment.dynamicCost(25, 7),
+                2,
+                EquipmentSlotGroup.MAINHAND))
         );
     }
 

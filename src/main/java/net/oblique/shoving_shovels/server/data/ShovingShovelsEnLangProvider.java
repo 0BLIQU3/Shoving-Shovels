@@ -18,5 +18,8 @@ public class ShovingShovelsEnLangProvider extends LanguageProvider {
 
         add("enchantment.shoving_shovels.rowdy", "Rowdy");
         add("enchantment.shoving_shovels.rowdy.desc", "Increases the damage of shoving.");
+
+        add("enchantment.shoving_shovels.wallbash", "Wallbash");
+        add("enchantment.shoving_shovels.wallbash.desc", "Targets can be hit into walls to inflict weakness/slowness and create a weak explosion.");
     }
 }

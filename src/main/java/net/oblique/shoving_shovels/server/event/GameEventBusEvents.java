@@ -3,6 +3,9 @@ package net.oblique.shoving_shovels.server.event;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -10,6 +13,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.SimpleExplosionDamageCalculator;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -23,6 +28,7 @@ import net.oblique.shoving_shovels.server.registry.AttributeRegistry;
 import net.oblique.shoving_shovels.server.util.ShoveDamageHandler;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @EventBusSubscriber(modid = ShovingShovels.MODID, bus = EventBusSubscriber.Bus.GAME)
@@ -41,6 +47,7 @@ public class GameEventBusEvents {
             return;
         }
         int upheavalLevel = heldItem.getEnchantmentLevel(player.level().holderOrThrow(ModEnchantments.UPHEAVAL));
+        int wallbashLevel = heldItem.getEnchantmentLevel(player.level().holderOrThrow(ModEnchantments.WALLBASH));
 
         int shovingDamage = (int) player.getAttributeValue(AttributeRegistry.SHOVE_DAMAGE);
 
@@ -85,6 +92,9 @@ public class GameEventBusEvents {
         target.getPersistentData().putUUID("ShoveID", shoveID);
         target.getPersistentData().putInt("ShoveDamage", shovingDamage);
         target.getPersistentData().putUUID("ShoveSource", player.getUUID());
+        if (wallbashLevel > 0) {
+            target.getPersistentData().putInt("WallbashLevel", wallbashLevel);
+        }
     }
 
     @SubscribeEvent
@@ -126,20 +136,21 @@ public class GameEventBusEvents {
         //Get shoveID of target: we'll want to check it against hit targets and then copy it to them if there's a mismatch (don't damage if it's the same)
         //This results in each shove being able to damage once, since shoving a target creates a new ID each time (so most of the time there will be a mismatch anyway)
         UUID shoveID = shovedTarget.getPersistentData().getUUID("ShoveID");
+        int shoveDamage = shovedTarget.getPersistentData().getInt("ShoveDamage");
+        UUID sourceUUID = shovedTarget.getPersistentData().getUUID("ShoveSource");
 
         //We now have an entity that has been Shoved recently, so let's do our damage
         AABB hitbox = shovedTarget.getBoundingBox().inflate(0.3);
         //Create a list of every living entity within the hitbox of the shove
+        //Also make sure that you can't shove yourself if you do this while very close to the target
         List<LivingEntity> targets = shovedTarget.level().getEntitiesOfClass(LivingEntity.class, hitbox,
-                e -> e != shovedTarget && e.isAlive());
+                e -> e != shovedTarget && e.isAlive() && e != e.level().getPlayerByUUID(sourceUUID));
 
         for (LivingEntity target : targets) {
             //If the target has already been hit by this specific shove before, skip it
             if (target.getPersistentData().hasUUID("LastShoveHitID") && target.getPersistentData().getUUID("LastShoveHitID").equals(shoveID)) {
                 continue;
             }
-            int shoveDamage = shovedTarget.getPersistentData().getInt("ShoveDamage");
-            UUID sourceUUID = shovedTarget.getPersistentData().getUUID("ShoveSource");
             //Make sure we're getting the correct source of damage (that being, the player)
             if (shovedTarget.level() instanceof ServerLevel serverLevel) {
                 Player sourcePlayer = serverLevel.getPlayerByUUID(sourceUUID);
@@ -151,6 +162,30 @@ public class GameEventBusEvents {
                 }
             }
             target.getPersistentData().putUUID("LastShoveHitID", shoveID);
+        }
+
+        if (!(shovedTarget.getPersistentData().getInt("WallbashLevel") > 0)) {
+            return;
+        }
+        if (shovedTarget.horizontalCollision && !shovedTarget.level().isClientSide()) {
+            shovedTarget.level().explode(
+                    shovedTarget,
+                    null,
+                    new SimpleExplosionDamageCalculator(false, false, Optional.of(1f), Optional.empty()),
+                    shovedTarget.getX(),
+                    shovedTarget.getY(),
+                    shovedTarget.getZ(),
+                    2F,
+                    false,
+                    Level.ExplosionInteraction.TRIGGER,
+                    ParticleTypes.EXPLOSION,
+                    ParticleTypes.EXPLOSION,
+                    SoundEvents.GENERIC_EXPLODE
+            );
+
+            shovedTarget.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 60, 1));
+            shovedTarget.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 1));
+            shovedTarget.getPersistentData().remove("WallbashLevel");
         }
     }
 
@@ -189,6 +224,7 @@ public class GameEventBusEvents {
         entity.getPersistentData().remove("LastShoveHitID");
         entity.getPersistentData().remove("ShoveDamage");
         entity.getPersistentData().remove("ShoveSource");
+        entity.getPersistentData().remove("WallbashLevel");
     }
 
 }
