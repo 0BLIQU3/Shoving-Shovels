@@ -1,7 +1,7 @@
 {
   "anvil_cost": 2,
   "description": {
-    "translate": "enchantment.shoving_shovels.heaving"
+    "translate": "enchantment.shoving_shovels.upheaval"
   },
   "max_cost": {
     "base": 25,
@@ -12,7 +12,6 @@
     "base": 5,
     "per_level_above_first": 7
   },
-  "primary_items": "#shoving_shovels:shoving_shovels_enchantable",
   "slots": [
     "mainhand"
   ],

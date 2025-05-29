@@ -40,6 +40,8 @@ public class GameEventBusEvents {
         if (!(heldItem.getItem() instanceof ShovelItem)) {
             return;
         }
+        int upheavalLevel = heldItem.getEnchantmentLevel(player.level().holderOrThrow(ModEnchantments.UPHEAVAL));
+
         int shovingDamage = (int) player.getAttributeValue(AttributeRegistry.SHOVE_DAMAGE);
 
         Vec3 lookingAngle = player.getLookAngle(); //Already a unit vector
@@ -50,14 +52,14 @@ public class GameEventBusEvents {
         knockbackStrength *= strengthScale;
         knockbackStrength *= 1.0 - target.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
 
-        int heavingLevel = heldItem.getEnchantmentLevel(player.level().holderOrThrow(ModEnchantments.HEAVING));
 
-        //This Heaving enchantment is the entire reason we're in the CriticalHitEvent.....
-        if (heavingLevel > 0 && event.isCriticalHit()) {
+
+        //This Upheaval enchantment is the entire reason we're in the CriticalHitEvent.....
+        if (upheavalLevel > 0 && event.isCriticalHit()) {
             target.setOnGround(false);
             target.setDeltaMovement(
                     0,
-                    0.58 * knockbackStrength,
+                    0.5 * knockbackStrength,
                     0
             );
         }

@@ -12,6 +12,9 @@ public class ModEnchantmentEffects {
     public static final DeferredRegister<MapCodec<? extends EnchantmentEntityEffect>> ENTITY_ENCHANTMENT_EFFECTS =
             DeferredRegister.create(Registries.ENCHANTMENT_ENTITY_EFFECT_TYPE, ShovingShovels.MODID);
 
-    public static final Supplier<MapCodec<? extends EnchantmentEntityEffect>> HEAVING =
-            ENTITY_ENCHANTMENT_EFFECTS.register("heaving", () -> HeavingEnchantmentEffect.CODEC);
+    public static final Supplier<MapCodec<? extends EnchantmentEntityEffect>> UPHEAVAL =
+            ENTITY_ENCHANTMENT_EFFECTS.register("upheaval", () -> UpheavalEnchantmentEffect.CODEC);
+
+    public static final Supplier<MapCodec<? extends EnchantmentEntityEffect>> ROWDY =
+            ENTITY_ENCHANTMENT_EFFECTS.register("rowdy", () -> RowdyEnchantmentEffect.CODEC);
 }

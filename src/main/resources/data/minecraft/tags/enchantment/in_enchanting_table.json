@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "shoving_shovels:heaving"
+    "shoving_shovels:upheaval",
+    "shoving_shovels:rowdy"
   ]
 }

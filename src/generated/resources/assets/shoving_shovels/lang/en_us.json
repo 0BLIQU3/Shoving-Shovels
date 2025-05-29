@@ -1,5 +1,7 @@
 {
   "attribute.shoving_shovels.shove_damage": "Shove Damage",
-  "enchantment.shoving_shovels.heaving": "Heaving",
-  "enchantment.shoving_shovels.heaving.desc": "Dealing a critical hit launches the target into the air."
+  "enchantment.shoving_shovels.rowdy": "Rowdy",
+  "enchantment.shoving_shovels.rowdy.desc": "Increases the damage of shoving.",
+  "enchantment.shoving_shovels.upheaval": "Upheaval",
+  "enchantment.shoving_shovels.upheaval.desc": "Dealing a critical hit launches the target into the air."
 }
