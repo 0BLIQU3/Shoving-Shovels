@@ -1,9 +1,12 @@
 package net.oblique.shoving_shovels.server.data.tags;
 
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.ShovelItem;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.oblique.shoving_shovels.ShovingShovels;
 import net.oblique.shoving_shovels.server.util.ShovingShovelsTags;
@@ -17,13 +20,12 @@ public class ShovingShovelsItemTagProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
-        this.tag(ShovingShovelsTags.Items.SHOVING_SHOVEL_ENCHANTABLE)
-                .add(Items.WOODEN_SHOVEL)
-                .add(Items.STONE_SHOVEL)
-                .add(Items.GOLDEN_SHOVEL)
-                .add(Items.IRON_SHOVEL)
-                .add(Items.DIAMOND_SHOVEL)
-                .add(Items.NETHERITE_SHOVEL);
+        var tagBuilder = this.tag(ShovingShovelsTags.Items.SHOVING_SHOVEL_ENCHANTABLE);
+        for (Item item : BuiltInRegistries.ITEM) {
+            if (item instanceof ShovelItem) {
+                tagBuilder.add(item);
+            }
+        }
     }
     @Override
     public String getName() {

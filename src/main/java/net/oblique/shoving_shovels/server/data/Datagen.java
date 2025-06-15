@@ -26,7 +26,6 @@ public class Datagen {
             generator.addProvider(event.includeServer(), new ShovingShovelsEnLangProvider(output));
             generator.addProvider(event.includeServer(), new ShovingShovelsItemTagProvider(output, lookupProvider, existingFileHelper));
             generator.addProvider(event.includeServer(), new ShovingShovelsDatapackProvider(output, lookupProvider));
-
         } catch (RuntimeException fail) {
             ShovingShovels.LOGGER.error("Failed to generate data, fail");
         }
