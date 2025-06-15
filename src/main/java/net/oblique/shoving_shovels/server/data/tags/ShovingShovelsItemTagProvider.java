@@ -5,11 +5,11 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShovelItem;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.oblique.shoving_shovels.ShovingShovels;
 import net.oblique.shoving_shovels.server.util.ShovingShovelsTags;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -19,7 +19,7 @@ public class ShovingShovelsItemTagProvider extends ItemTagsProvider {
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider provider) {
+    protected void addTags(HolderLookup.@NotNull Provider provider) {
         var tagBuilder = this.tag(ShovingShovelsTags.Items.SHOVING_SHOVEL_ENCHANTABLE);
         for (Item item : BuiltInRegistries.ITEM) {
             if (item instanceof ShovelItem) {
@@ -28,7 +28,7 @@ public class ShovingShovelsItemTagProvider extends ItemTagsProvider {
         }
     }
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "Shoving Shovels Item Tags";
     }
 }

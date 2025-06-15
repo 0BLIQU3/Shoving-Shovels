@@ -54,7 +54,7 @@ public class Config {
                 .map(item -> {
                     ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
                     double attackDamage = ((ShovelItem) item).getTier().getAttackDamageBonus();
-                    return id + "=" + (attackDamage + 1); // Default damage
+                    return id + "=" + (attackDamage + 1); //Default damage is based on tier of item
                 })
                 .toList();
     }

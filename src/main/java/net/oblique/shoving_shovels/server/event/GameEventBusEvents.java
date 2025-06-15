@@ -4,6 +4,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -139,7 +140,7 @@ public class GameEventBusEvents {
                         back.x,
                         back.y + shovedTarget.getBbHeight() / 2,
                         back.z,
-                        2,
+                        1,
                         0.2, 0.2, 0.2,
                         0.02
                 );
@@ -168,6 +169,16 @@ public class GameEventBusEvents {
                 Player sourcePlayer = serverLevel.getPlayerByUUID(sourceUUID);
                 if (sourcePlayer != null) {
                     target.hurt(serverLevel.damageSources().playerAttack(sourcePlayer), shoveDamage);
+                    target.level().playSound(
+                            null,
+                            target.getX(),
+                            target.getY(),
+                            target.getZ(),
+                            SoundEvents.PLAYER_ATTACK_SWEEP,
+                            SoundSource.PLAYERS,
+                            1.0F,
+                            1.0F
+                    );
                 }
                 else {
                     target.hurt(serverLevel.damageSources().generic(), shoveDamage);
