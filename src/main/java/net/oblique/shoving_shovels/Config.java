@@ -1,8 +1,5 @@
 package net.oblique.shoving_shovels;
 
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ShovelItem;
 import net.neoforged.neoforge.common.ModConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -43,19 +40,8 @@ public class Config {
                 .translation("shoving_shovels.configuration.shovelItems")
                 .comment("List of shovel item IDs with damage values (format: 'modid:itemid=damage')")
                 .comment("By default, this generates a list of all shovel items within your modpack, so if you're adding new mods with shovels, be sure to regenerate this config.")
-                .defineList("shovelItems", getDefaultShovelItemList(), () -> "modid:itemid=1.0",
+                .defineListAllowEmpty("shovelItems", List.of(), () -> "modid:itemid=1.0",
                         obj -> obj instanceof String && ((String) obj).contains("="));
         builder.pop();
-    }
-    //WAHHHHHH it was taking too long to figure out how to make it actually good, so we're parsing strings now
-    private static List<String> getDefaultShovelItemList() {
-        return BuiltInRegistries.ITEM.stream()
-                .filter(item -> item instanceof ShovelItem)
-                .map(item -> {
-                    ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
-                    double attackDamage = ((ShovelItem) item).getTier().getAttackDamageBonus();
-                    return id + "=" + (attackDamage + 1); //Default damage is based on tier of item
-                })
-                .toList();
     }
 }
